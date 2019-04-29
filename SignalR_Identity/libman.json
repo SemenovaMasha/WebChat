@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "vue@2.6.10",
+      "destination": "wwwroot/lib/vue/",
+      "files": [
+        "vue.min.js",
+        "vue.js"
+      ]
+    },
+    {
+      "library": "axios@0.18.0",
+      "destination": "wwwroot/lib/axios/",
+      "files": [
+        "axios.min.js",
+        "axios.js"
+      ]
+    },
+    {
+      "library": "croppie@2.6.4",
+      "destination": "wwwroot/lib/croppie/",
+      "files": [
+        "croppie.min.js",
+        "croppie.css",
+        "croppie.js",
+        "croppie.min.css",
+        "croppie.min.css.map"
+      ]
+    }
+  ]
+}

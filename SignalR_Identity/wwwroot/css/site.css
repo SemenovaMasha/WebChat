@@ -1,0 +1,149 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\ 
+for details on configuring this project to bundle and minify static web assets. */
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Carousel */
+.carousel-caption p {
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+/* Make .svg files in the carousel display properly in older browsers */
+.carousel-inner .item img[src$=".svg"] {
+    width: 100%;
+}
+
+/* QR code generator */
+#qrCode {
+    margin: 15px;
+}
+
+/* Hide/rearrange for smaller screens */
+@media screen and (max-width: 767px) {
+    /* Hide captions */
+    .carousel-caption {
+        display: none;
+    }
+}
+
+.scrollbar-light-blue::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    background-color: #F5F5F5;
+    border-radius: 10px; }
+
+.scrollbar-light-blue::-webkit-scrollbar {
+    width: 12px;
+    background-color: #F5F5F5; }
+
+.scrollbar-light-blue::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    background-color: #82B1FF; }
+
+.label-pill {
+    padding-right: .6em;
+    padding-left: .6em;
+    border-radius: 10rem;
+}
+
+#rooms-list .badge {
+    background-color: #337ab7;
+}
+
+#chatroom {
+    background: #e6eaea;
+    position: relative;
+    overflow-y: scroll;
+    height: 500px;
+    margin-bottom: 10px;
+}
+
+#chatroom li p {
+    white-space: pre-line
+
+}
+
+#chatroom li.reply p {
+    max-width: 70%;
+    float: right;
+    padding: 10px 15px;
+    border-radius: 20px;
+    background: #f5f5f5;
+}
+
+#chatroom li.sent p {
+    max-width: 70%;
+    float: left;
+    padding: 10px 15px;
+    border-radius: 20px;
+    background: #b5cffb;
+}
+
+#chatroom li {
+    overflow: auto;
+    background: transparent;
+}
+#chatroom .list-group-item {
+    border: none;
+    padding: 0px 15px;
+}
+
+
+#imagePreview {
+    width: 180px;
+    height: 180px;
+    background-position: center center;
+    background-size: cover;
+    -webkit-box-shadow: 0 0 1px 1px rgba(0, 0, 0, .3);
+    display: inline-block;
+}
+.upload-msg {
+    text-align: center;
+    padding-top: 100px;
+    padding-left:30px;
+    padding-right: 30px;
+    font-size: 22px;
+    color: #aaa;
+    width: 240px;
+    height: 200px;
+    margin: 10px auto;
+    border: 1px solid #aaa;
+}
+.upload-demo.ready #upload-demo{
+    display: block;
+}
+.upload-demo.ready .buttons .upload-result, .upload-demo.ready .buttons .reset {
+    display:inline;
+}
+.upload-demo #upload-demo, .upload-demo .buttons .upload-result, .upload-demo .buttons .reset, .upload-demo.ready .upload-msg {
+    display: none;
+}
+#upload{
+    position:absolute;
+    top:-1000px;
+}
+
+#btn{
+    background-color: #189094;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    text-shadow: none;
+    cursor: pointer;
+    width: auto;
+    margin: 0 auto;
+}

@@ -1,0 +1,42 @@
+﻿@model SignalR_Identity.ViewModels.RoomMessagesViewModel
+
+@{
+    string curUser = User.Identity.Name;
+}
+
+@if (@Model.ChatGroup != null)
+{
+    <input id="chatGroupId" name="chatGroupId" type="hidden" value="@Model.ChatGroup.Id">
+    <div id="chatroom" class="card scrollbar-light-blue">
+        <div class="card-body mx-4">
+            <ul class="list-group">
+                @foreach (Message message in Model.ChatGroup.Messages.OrderBy(m => m.Date))
+                {
+                    if (message.User.UserName.Equals(curUser))
+                    {
+                        <li class="list-group-item sent">
+                            <p >@message.Text </p>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="list-group-item reply">
+                            <p ><b>@message.User.UserName: </b>@message.Text</p>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+
+    </div>
+    <div class="input-group" style="width: 100%;">
+        <textarea type="text" id="message" class="form-control" style="resize: none; border-radius: 10px;"></textarea>
+        @*<span class="input-group-btn">
+                <button onclick="SendMsg()" id="sendBtn" class="btn btn-primary" type="submit">Send</button>
+            </span>*@
+    </div>
+}
+else
+{
+    <h4 style="text-align: center; ">@Model.ErrorMessage</h4>
+}

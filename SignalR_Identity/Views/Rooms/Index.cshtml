@@ -1,0 +1,226 @@
+﻿@using Microsoft.AspNetCore.Http
+@using SignalR_Identity.ViewModels
+
+@model SignalR_Identity.ViewModels.RoomViewModel
+
+@{
+    ViewBag.Title = "Rooms";
+    Layout = "_Layout";
+}
+
+<h2>Chat room</h2>
+
+<div class="row">
+    <div id="chatroomLoad" class="col-sm-9">
+        @{Html.RenderPartial("RoomMessages", new RoomMessagesViewModel { ChatGroup = Model.ChatGroup, ErrorMessage = Model.ErrorMessage });}
+    </div>
+    <div id="rooms-list" class="col-sm-3">
+        <div style="margin-bottom: 10px">
+            <button style="width: 100%;" class="btn btn-success" type="submit"
+                    data-toggle="modal" data-target="#room-info-modal"
+                    onclick="RoomInfoComponent.openInfo();">
+                Add room
+            </button>
+        </div>
+        <div class="list-group">
+            @foreach (var chatGroup in Model.UserChatGroups)
+            {
+                var isActive = (@Model.ChatGroup != null && chatGroup.Id == @Model.ChatGroup.Id) ? "active" : "";
+
+            <button name="@chatGroup.Id" href="@Url.Action(null,"Rooms",new { roomId = @chatGroup.Id})"
+               onclick="event.preventDefault(); loadRoom('@chatGroup.Id'); changeActive(this)"
+               class="list-group-item list-group-item-action @isActive">
+                <a data-toggle="modal" data-target="#room-info-modal" onclick="RoomInfoComponent.openInfo('@chatGroup.Id');"><i class="fas fa-cog" style=" color: #11b316;"></i></a>
+                <a onclick="removeChat(this,'@chatGroup.Id');"><i class="far fa-trash-alt" style=" color: #d60f0f;"></i></a>
+                @chatGroup.Name
+                <span class="badge" style="display: none">!</span>
+            </button>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="room-info-modal" tabindex="-1" role="dialog" aria-labelledby="room-info-modal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="display: inline-block;" class="modal-title" id="roomInfoModalTitle">Room Info</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="room-info">
+                <div class="form-group">
+                    <label for="roomInfoName">Name: </label>
+                    <input class="form-control" v-model="name" style="margin-bottom: 10px" placeholder="Name" id ="roomInfoName"/>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="list-group">
+                            <div class="list-group-item list-group-item-info">Members</div>
+                            <a v-for="member in members" v-on:click="changeState(member)" href="#" class="list-group-item list-group-item-action">
+                                {{ member }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="list-group">
+                            <div class="list-group-item list-group-item-info">Non-members</div>
+                            <a v-for="nonmember in others" v-on:click="changeState(nonmember)" href="#" class="list-group-item list-group-item-action">
+                                {{ nonmember }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="RoomInfoComponent.save();" type="button" data-dismiss="modal" class="btn btn-success">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="removeConfirmModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Do you want to delete this?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="modal-btn-yes">Yes</button>
+                <button type="button" class="btn btn-primary" id="modal-btn-no">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="js/signalr.min.js"></script>
+    <script src="~/lib/vue/vue.js"></script>
+    <script src="~/lib/axios/axios.js"></script>
+    <script src="~/js/RoomInfoComponent.js"></script>
+
+    <script>
+
+        function textAreaHandle(evt) {
+            if (evt.keyCode == 13 && !evt.shiftKey) {
+                SendMsg();
+                evt.preventDefault();
+            }
+        }
+
+        $(document).ready(function() {
+            $("#chatroom").animate({
+                    scrollTop: $("#chatroom ul").height()
+                },
+                0);
+
+            $("#message").keydown(textAreaHandle).keypress(textAreaHandle);
+            
+        });
+
+
+        function loadRoom(chatId) {
+            let oldId = $("#chatGroupId").val();
+            $("#chatroomLoad").load('@(Url.Action("GetMessagesView", "Rooms"))?chatId=' + chatId,
+                function() {
+                    $("#chatroom").animate({
+                            scrollTop: $("#chatroom ul").height()
+                        },
+                        0);
+
+                    $("#message").keydown(textAreaHandle).keypress(textAreaHandle);
+
+
+                });
+        };
+
+        function changeActive(element) {
+            $('#rooms-list button').each(function() {
+                $(this).removeClass('active');
+            });
+
+            $(element).addClass('active');
+
+            $(element).children('span').css('display', 'none');
+
+            window.history.pushState("object or string", "Title", $(element).attr('href'));
+        };
+
+        let hubUrl = 'https://localhost:44358/chat';
+        const hubConnection = new signalR.HubConnectionBuilder()
+            .withUrl(hubUrl)
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        hubConnection.on('Send',
+            function(chatId, message, userName) {
+                let openedChatId = $("#chatGroupId").val();
+
+                if (openedChatId === chatId) {
+                    var newLi = $('<li/>')
+                        .addClass('list-group-item');
+
+                    let curUser = "@User.Identity.Name";
+
+                    if (curUser === userName) {
+                        newLi.addClass('sent')
+                            .html(`<p>${message}</p>`);
+                    } else {
+                        newLi.addClass('reply')
+                            .html(`<p><b>${userName}: </b>${message}</p>`);
+                    }
+
+                    $("#chatroom ul").append(newLi);
+
+                    $("#chatroom").animate({
+                            scrollTop: '+=' +
+                                $("#chatroom li:last-child").outerHeight() +
+                                'px'
+                        },
+                        100);
+                } else {
+                    $(`#rooms-list button[name=${chatId}] span`).css('display', 'block');
+                }
+            });
+
+        function SendMsg() {
+            let message = $("#message").val();
+            let chatId = $("#chatGroupId").val();
+            if (message) {
+                hubConnection.invoke('Send', chatId, message, "@User.Identity.Name");
+                $("#message").val('');
+            }
+        }
+
+        function removeChat(element, chatId) {
+            $("#removeConfirmModal").modal('show');
+            var modalConfirm = function(callback){
+                $("#modal-btn-yes").on("click", function(){
+                    callback(true);
+                    $("#removeConfirmModal").modal('hide');
+                });
+  
+                $("#modal-btn-no").on("click", function(){
+                    callback(false);
+                    $("#removeConfirmModal").modal('hide');
+                });
+            };
+
+            modalConfirm(function(confirm){
+                if (confirm) {
+                    axios.delete('/Rooms/RemoveChat?roomId=' + chatId)
+                        .then(response => {
+                            $(element).parent().remove();
+                            location.reload();
+                        });
+                }
+            });
+        }
+
+        hubConnection.start();
+
+
+    </script>
+}
