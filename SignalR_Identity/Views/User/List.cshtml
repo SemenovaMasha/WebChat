@@ -1,0 +1,18 @@
+﻿@model IEnumerable<SignalrUser>
+
+@{
+    ViewData["Title"] = "GetUserListView";
+}
+
+<h2>User list</h2>
+
+@foreach (SignalrUser user in Model)
+{  
+    
+    string imageName = user.CropAvatar == null ? "default/FullAvatar.png" : user.CropAvatar.Path;
+    
+    <img src="@(Url.Content("~/images/avatars/")+imageName)" style="margin-bottom: 10px;  display: inline-block; width: 50px; height:50px; object-fit: cover;"
+         alt="" class="img-rounded img-responsive"/>
+    <a href="@Url.Action("Profile",new {id = user.Id})">@user.UserName </a>
+    <br/>
+}

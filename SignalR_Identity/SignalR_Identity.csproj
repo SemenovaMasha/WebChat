@@ -127,6 +127,7 @@
 
   <ItemGroup>
     <Folder Include="Pages\" />
+    <Folder Include="wwwroot\images\avatars\" />
   </ItemGroup>
 
   <ItemGroup>

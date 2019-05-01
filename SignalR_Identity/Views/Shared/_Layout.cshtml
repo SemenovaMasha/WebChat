@@ -32,9 +32,8 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-left">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>   
+                    <li><a asp-area="" asp-controller="User" asp-action="List">Users</a></li>
+                    <li><a asp-area="" asp-controller="Rooms" asp-action="Index">Rooms</a></li> 
                 </ul>
                 <ul class="nav navbar-nav navbar-right" style="margin-top: 10px;">
                         @if (User.Identity.IsAuthenticated)

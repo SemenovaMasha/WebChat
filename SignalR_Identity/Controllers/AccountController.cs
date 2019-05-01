@@ -32,6 +32,8 @@ namespace SignalR_Identity.Controllers
             if (ModelState.IsValid)
             {
                 SignalrUser user = new SignalrUser { UserName = model.Name };
+                user.BirthDate = model.BirthDate;
+                user.CreatingDate = DateTime.Now;
 
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)

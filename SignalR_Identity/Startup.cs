@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SignalR_Identity.Filters;
 using SignalR_Identity.Hubs;
 using SignalR_Identity.Models;
 using SignalR_Identity.Services;
@@ -50,11 +51,15 @@ namespace SignalR_Identity
             })
                 .AddEntityFrameworkStores<SignalrContext>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options =>
+            {
+                //options.Filters.Add(typeof(UserProfileAccessFilter)); 
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             
             services.AddSignalR();
 
             services.AddScoped<MessageService>();
+            services.AddScoped<UserService>();
             services.AddScoped<RoomService>();
             
             services.AddHostedService<RemoveOldMessagesService>();
@@ -88,7 +93,8 @@ namespace SignalR_Identity
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Rooms}/{action=Index}/{id?}");
+                    //template: "{controller=Rooms}/{action=Index}/{id?}");
+                    template: "{controller=User}/{action=List}/{id?}");
             });
 
         }

@@ -1,0 +1,34 @@
+﻿@model SignalrUser
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="row " style="margin-top: 30px">
+    <div class="col-sm-2" ></div>
+    <div class="col-sm-4">
+        @{
+            string imageName = Model.CropAvatar == null ? "default/FullAvatar.png" : Model.CropAvatar.Path;
+        }
+        <img src="@(Url.Content("~/images/avatars/")+imageName)" style="margin: auto;"
+             alt="" class="img-rounded img-responsive"/>
+    </div>
+    <div class="col-sm-4">
+        <div style=" margin: auto;">
+            <blockquote>
+                <p>@Model.UserName</p>
+            </blockquote>
+            <p>
+                <b>Birth date: </b> @Model.BirthDate.ToString("dd MMMM yyyy")
+                <br />
+                <b>Created date: </b>  @Model.CreatingDate.ToString("dd MMM yyyy")
+                <br />
+
+                @if (User.Identity.Name == Model.UserName)
+                {
+                    <a href="@Url.Action("EditProfile",new {id = Model.Id})">Edit</a>
+
+                }
+            </p>
+        </div>
+    </div>
+</div>

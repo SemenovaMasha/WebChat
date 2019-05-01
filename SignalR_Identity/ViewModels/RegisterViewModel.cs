@@ -22,5 +22,10 @@ namespace SignalR_Identity.ViewModels
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
         public string PasswordConfirm { get; set; }
+        
+        [DataType(DataType.Date)]
+        [Display(Name = "Birth date")]
+        public DateTime BirthDate { get; set; }
+
     }
 }
