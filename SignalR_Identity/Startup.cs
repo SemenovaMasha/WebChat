@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -51,17 +52,21 @@ namespace SignalR_Identity
             })
                 .AddEntityFrameworkStores<SignalrContext>();
 
-            services.AddMvc(options =>
-            {
-                //options.Filters.Add(typeof(UserProfileAccessFilter)); 
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             
             services.AddSignalR();
 
             services.AddScoped<MessageService>();
             services.AddScoped<UserService>();
             services.AddScoped<RoomService>();
-            
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("EditRoomPolicy", policy =>
+                    policy.Requirements.Add(new RoomCreatorRequirement()));
+            });
+            services.AddSingleton<IAuthorizationHandler, RoomInfoEditAuthorizationHandler>();
+
             services.AddHostedService<RemoveOldMessagesService>();
         }
 

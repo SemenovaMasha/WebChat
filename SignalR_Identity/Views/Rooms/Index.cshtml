@@ -27,14 +27,17 @@
             {
                 var isActive = (@Model.ChatGroup != null && chatGroup.Id == @Model.ChatGroup.Id) ? "active" : "";
 
-            <button name="@chatGroup.Id" href="@Url.Action(null,"Rooms",new { roomId = @chatGroup.Id})"
-               onclick="event.preventDefault(); loadRoom('@chatGroup.Id'); changeActive(this)"
-               class="list-group-item list-group-item-action @isActive">
-                <a data-toggle="modal" data-target="#room-info-modal" onclick="RoomInfoComponent.openInfo('@chatGroup.Id');"><i class="fas fa-cog" style=" color: #11b316;"></i></a>
-                <a onclick="removeChat(this,'@chatGroup.Id');"><i class="far fa-trash-alt" style=" color: #d60f0f;"></i></a>
-                @chatGroup.Name
-                <span class="badge" style="display: none">!</span>
-            </button>
+                <button name="@chatGroup.Id" href="@Url.Action(null, "Rooms", new {roomId = @chatGroup.Id})"
+                        onclick="event.preventDefault();loadRoom('@chatGroup.Id');changeActive(this)"
+                        class="list-group-item list-group-item-action @isActive">
+                    @if (chatGroup.Creator.UserName == User.Identity.Name)
+                    {
+                        <a data-toggle="modal" data-target="#room-info-modal" onclick="RoomInfoComponent.openInfo('@chatGroup.Id');"><i class="fas fa-cog" style="color: #11b316;"></i></a>
+                        <a onclick="removeChat(this, '@chatGroup.Id');"><i class="far fa-trash-alt" style="color: #d60f0f;"></i></a>
+                    }
+                    @chatGroup.Name
+                    <span class="badge" style="display: none">!</span>
+                </button>
             }
         </div>
     </div>
@@ -50,9 +53,12 @@
                 </button>
             </div>
             <div class="modal-body" id="room-info">
+                <div class="alert alert-danger" role="alert" style="display: none;" id="editAccessDenied">
+                    Only creator can edit room info
+                </div>
                 <div class="form-group">
                     <label for="roomInfoName">Name: </label>
-                    <input class="form-control" v-model="name" style="margin-bottom: 10px" placeholder="Name" id ="roomInfoName"/>
+                    <input class="form-control" v-model="name" style="margin-bottom: 10px" placeholder="Name" id="roomInfoName"/>
                 </div>
                 <div class="row">
                     <div class="col-sm-6">
@@ -75,7 +81,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button onclick="RoomInfoComponent.save();" type="button" data-dismiss="modal" class="btn btn-success">Save changes</button>
+                <button onclick="RoomInfoComponent.save();" type="button" class="btn btn-success">Save changes</button>
             </div>
         </div>
     </div>
@@ -90,6 +96,18 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" id="modal-btn-yes">Yes</button>
                 <button type="button" class="btn btn-primary" id="modal-btn-no">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="removeAccessDenied">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Only creator can delete room</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="$('#removeAccessDenied').modal('hide');" >OK</button>
             </div>
         </div>
     </div>
@@ -214,6 +232,8 @@
                         .then(response => {
                             $(element).parent().remove();
                             location.reload();
+                        }).catch(function (error) {
+                            $("#removeAccessDenied").modal('show');
                         });
                 }
             });

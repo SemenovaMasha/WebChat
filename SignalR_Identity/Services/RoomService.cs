@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SignalR_Identity.Models;
@@ -23,7 +22,8 @@ namespace SignalR_Identity.Services
         {
             SignalrUser user = _context.Users
                 .Include(c => c.UserGroups)
-                .ThenInclude(ug => ug.ChatGroup)
+                    .ThenInclude(ug => ug.ChatGroup)
+                        .ThenInclude(ug => ug.Creator)
                 .FirstOrDefault(u => u.UserName == userName);
             return user.UserGroups.Select(g => g.ChatGroup).ToList();
         }
@@ -31,6 +31,7 @@ namespace SignalR_Identity.Services
         public ChatGroup GetChatGroupById(Guid roomId)
         {
             return _context.ChatGroups
+                .Include(g=>g.Creator)
                 .Include(g=>g.Messages)
                 .ThenInclude(m=>m.User)
                 .FirstOrDefault(g => g.Id == roomId);
@@ -50,11 +51,12 @@ namespace SignalR_Identity.Services
             return _context.Users.ToList();
         }
 
-        public ChatGroup CreateChatGroup(string groupName, List<string> userNames)
+        public ChatGroup CreateChatGroup(string groupName, List<string> userNames, string creator)
         {
             ChatGroup chatGroup = new ChatGroup()
             {
-                Name = groupName
+                Name = groupName,
+                Creator = _context.Users.FirstOrDefault(u=>u.UserName == creator)
             };
             _context.ChatGroups.Add(chatGroup);
             Save();

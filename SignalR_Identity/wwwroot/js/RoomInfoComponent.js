@@ -9,6 +9,7 @@
     props: ['roomId'],
     methods: {
         openInfo: function (roomId) {
+            $('#editAccessDenied').css('display', 'none');
             var self = this;
             axios.get('/Rooms/GetRoomInfo?roomId='+roomId)
                 .then(function (response) {
@@ -49,8 +50,10 @@
                     members: self.members
                 }
             }).then(function (result) {
-                location.reload();
-            });
+                    location.reload();
+                }).catch(function (error) {
+                    $('#editAccessDenied').css('display', 'block');
+            });;
         },
     },
     created: function () {

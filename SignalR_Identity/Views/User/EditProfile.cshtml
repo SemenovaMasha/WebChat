@@ -101,7 +101,7 @@
 
             console.log($uploadCrop);
 
-   
+
             $uploadCrop.croppie('result',
                 {
                     type: 'base64',
@@ -132,25 +132,29 @@
             $('#displayAvatar').css('display', 'block');
             clearCroppie();
         });
-        
+
         function readFile(input) {
             if (input.files && input.files[0]) {
                 if (/^image/.test(input.files[0].type)) {
-                    clearCroppie();
-                    setUpCroppie();
+                    if (input.files[0].size <= 2 * 1024 * 1024) {
+                        clearCroppie();
+                        setUpCroppie();
 
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        $('#uploadMsg').css('display', 'none');
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            $('#uploadMsg').css('display', 'none');
 
-                        $uploadCrop.croppie('bind',
-                            {
-                                url: e.target.result
-                            }).then(function() {
-                            console.log('jQuery bind complete');
-                        });
+                            $uploadCrop.croppie('bind',
+                                {
+                                    url: e.target.result
+                                }).then(function() {
+                                console.log('jQuery bind complete');
+                            });
+                        }
+                        reader.readAsDataURL(input.files[0]);
+                    } else {
+                        alert("File size exceeds 2Mb");
                     }
-                    reader.readAsDataURL(input.files[0]);
                 } else {
                     alert("You may only select image files");
                 }
@@ -158,7 +162,7 @@
 
             }
         }
-        
+
         var info;
 
         function SaveProfile() {

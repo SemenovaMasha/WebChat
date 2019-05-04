@@ -11,5 +11,6 @@ namespace SignalR_Identity.Models
         public string Name { get; set; }
         public List<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
         public List<Message> Messages { get; set; } = new List<Message>();
+        public SignalrUser Creator { get; set; }
     }
 }

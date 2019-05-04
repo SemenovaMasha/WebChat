@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SignalR_Identity.Models;
 using SignalR_Identity.Services;
 using SignalR_Identity.ViewModels;
@@ -17,12 +19,14 @@ namespace SignalR_Identity.Controllers
         private readonly UserManager<SignalrUser> _userManager;
         private readonly MessageService MessageService;
         private readonly RoomService RoomService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public RoomsController(UserManager<SignalrUser> userManager, MessageService messageService, RoomService roomService)
+        public RoomsController(UserManager<SignalrUser> userManager, MessageService messageService, RoomService roomService, IAuthorizationService authorizationService)
         {
             _userManager = userManager;
             MessageService = messageService;
             RoomService = roomService;
+            _authorizationService = authorizationService;
         }
         
         public IActionResult Index(Guid roomId)
@@ -90,9 +94,10 @@ namespace SignalR_Identity.Controllers
             {
                 viewModel = new RoomInfoViewModel()
                 {
-                    Name = "",
-                    Members = new List<string>(),
+                    Name = "New room",
+                    Members = new List<string>{ HttpContext.User.Identity.Name },
                     Others = RoomService.GetAllUsers()
+                        .Where(u=>u.UserName != HttpContext.User.Identity.Name)
                         .Select(u => u.UserName).ToList()
                 };
             }
@@ -104,10 +109,22 @@ namespace SignalR_Identity.Controllers
         public IActionResult RemoveChat(Guid roomId)
         {
             ChatGroup chatGroup = RoomService.GetChatGroupById(roomId);
-            
-            if (chatGroup!=null)
+
+            if (chatGroup != null)
             {
-                RoomService.removeChatGroup(chatGroup);
+                var authorizationResult = _authorizationService
+                    .AuthorizeAsync(User, chatGroup, "EditRoomPolicy").Result;
+
+                if (authorizationResult.Succeeded)
+                {
+                    RoomService.removeChatGroup(chatGroup);
+                    return Ok();
+                }
+                else
+                {
+                    return StatusCode(403);
+                    ;
+                }
             }
 
             return Ok();
@@ -118,11 +135,23 @@ namespace SignalR_Identity.Controllers
         {
             if (roomInfo.Id == Guid.Empty)
             {
-                RoomService.CreateChatGroup(roomInfo.Name, roomInfo.Members);
+                RoomService.CreateChatGroup(roomInfo.Name, roomInfo.Members, HttpContext.User.Identity.Name);
             }
             else
             {
-                RoomService.UpdateChatGroup(roomInfo.Id, roomInfo.Name, roomInfo.Members);
+                var authorizationResult =  _authorizationService
+                    .AuthorizeAsync(User, RoomService.GetChatGroupById(roomInfo.Id), "EditRoomPolicy").Result;
+
+                if (authorizationResult.Succeeded)
+                {
+                    RoomService.UpdateChatGroup(roomInfo.Id, roomInfo.Name, roomInfo.Members);
+                    return Ok(new { isNew = roomInfo.Id == Guid.Empty });
+                }
+                else 
+                {
+                    return StatusCode(403); ;
+                }
+
             }
 
             return Ok(new{ isNew = roomInfo.Id == Guid.Empty});
