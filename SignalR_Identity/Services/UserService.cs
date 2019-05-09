@@ -50,5 +50,25 @@ namespace SignalR_Identity.Services
 
             return user;
         }
+
+        public List<SignalrUser> GetAll()
+        {
+            return _context.Users.ToList();
+        }
+
+        public List<SignalrUser> GetAll(UserListFilterViewModel filterViewModel)
+        {
+            var list = from u in _context.Users select u;
+
+            if (filterViewModel != null)
+            {
+                if (!String.IsNullOrEmpty(filterViewModel.UserNameFilter))
+                {
+                    list = list.Where(u => u.UserName.ToLower().Contains(filterViewModel.UserNameFilter.ToLower()));
+                }
+            }
+
+            return list.ToList();
+        }
     }
 }

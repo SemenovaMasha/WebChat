@@ -71,7 +71,7 @@ namespace SignalR_Identity
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -102,6 +102,38 @@ namespace SignalR_Identity
                     template: "{controller=User}/{action=List}/{id?}");
             });
 
+            CreateRoles(serviceProvider).Wait();
+        }
+
+        private async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<SignalrUser>>();
+            string roleName = "Admin";
+            IdentityResult roleResult;
+
+            var roleExist = await RoleManager.RoleExistsAsync(roleName);
+            if (!roleExist)
+            {
+                roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
+            }
+
+            var poweruser = new SignalrUser()
+            {
+                UserName = "admin",
+            };
+
+            string UserPassword = "admin";
+            var _user = await UserManager.FindByNameAsync("admin");
+            
+            if (_user == null)
+            {
+                var createPowerUser = await UserManager.CreateAsync(poweruser, UserPassword);
+                if (createPowerUser.Succeeded)
+                {
+                    await UserManager.AddToRoleAsync(poweruser, "Admin");
+                }
+            }
         }
     }
 }

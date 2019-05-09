@@ -1,0 +1,68 @@
+﻿@model SignalR_Identity.ViewModels.UserListFilterViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Control panel</h2>
+<form asp-action="Index" method="GET">
+    <div class="form-actions no-color">
+        <p>
+            <input type="submit" value="Search" class="btn btn-default" />
+            <a asp-action="Index">Back to Full List</a>
+        </p>
+    </div>
+
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">
+                    Username<br/>
+                    <input asp-for="UserNameFilter" />
+                </th>
+                <th scope="col">Birth date </th>
+                <th scope="col">Creating date</th>
+                <th scope="col">Is deleted</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Users)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    </td>
+                    <td>
+                        @if (item.BirthDate != null)
+                        {
+                            @item.BirthDate.ToString("dd.MM.yyyy")
+                        }
+                    </td>
+                    <td>
+                        @if (item.CreatingDate != null)
+                        {
+                            @item.CreatingDate.ToString("dd.MM.yyyy")
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsDeleted)
+                    </td>
+                    <td>
+                        <i class="fas fa-cog" style="color: #11b316;"></i>
+                    </td>
+                    <td>
+                        <i class="far fa-trash-alt" style="color: #d60f0f;"></i>
+                    </td>
+                    @*<td>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>*@
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>
