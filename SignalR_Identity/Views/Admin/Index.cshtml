@@ -17,12 +17,25 @@
         <thead class="thead-light">
             <tr>
                 <th scope="col">
-                    Username<br/>
-                    <input asp-for="UserNameFilter" />
+                    Username
+                    <br /><input type="text" name="UserNameFilter" id="UserNameFilter" class="form-control" value="@Model.UserNameFilter" />
                 </th>
-                <th scope="col">Birth date </th>
-                <th scope="col">Creating date</th>
-                <th scope="col">Is deleted</th>
+                <th scope="col">
+                    Birth date
+                    <br />
+                    <input type="text" name="birthDateRange"  class="form-control" value="" />
+
+                    <input type="hidden" name="BirthDateRangeStart" id="BirthDateRangeStart" class="form-control" value="@Model.BirthDateRangeStart?.ToString("dd.MM.yyyy")" />
+                    <input type="hidden" name="BirthDateRangeEnd" id="BirthDateRangeEnd" class="form-control" value="@Model.BirthDateRangeEnd?.ToString("dd.MM.yyyy")" />
+                    @*<input type="text" name="daterange" value="01/01/2018 - 01/15/2018" />*@
+                </th>
+                <th scope="col">
+                    Is deleted
+                    <br />
+                    @*<input type="checkbox" name="IsDeleted" id="IsDeleted" class="form-check-input" value="@Model.IsDeleted" />*@
+                    <input asp-for="@Model.OnlyDeleted"> only deleted
+                    <br/><input asp-for="@Model.OnlyNotDeleted"> only not
+                </th>
                 <th scope="col"></th>
                 <th scope="col"></th>
             </tr>
@@ -41,19 +54,24 @@
                         }
                     </td>
                     <td>
-                        @if (item.CreatingDate != null)
-                        {
-                            @item.CreatingDate.ToString("dd.MM.yyyy")
-                        }
-                    </td>
-                    <td>
                         @Html.DisplayFor(modelItem => item.IsDeleted)
                     </td>
                     <td>
-                        <i class="fas fa-cog" style="color: #11b316;"></i>
+                        <a asp-action="EditProfile" asp-controller="User" asp-route-id="@item.Id"> <i class="fas fa-edit" style="color: #11b316;"></i></a>
                     </td>
                     <td>
-                        <i class="far fa-trash-alt" style="color: #d60f0f;"></i>
+                        @if (!item.IsDeleted)
+                        {
+                            <a asp-action="DeleteUser" asp-route-id="@item.Id">
+                                <i class="far fa-trash-alt" style="color: #d60f0f;"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-action="RestoreUser" asp-route-id="@item.Id">
+                                <i class="far fa-arrow-alt-circle-up" style="color: #daa520;"></i>
+                            </a>
+                        }
                     </td>
                     @*<td>
                             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
@@ -66,3 +84,55 @@
         </tbody>
     </table>
 </form>
+@section Scripts
+    {
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script>
+        $(function () {
+
+        });
+        $(document).ready(function () {
+            $('input[name="birthDateRange"]').daterangepicker({
+                opens: 'left',
+                autoUpdateInput: false,
+                linkedCalendars: false,
+                startDate: $('#BirthDateRangeStart').val() instanceof Date && !isNaN($('#BirthDateRangeStart').val()) ? $('#BirthDateRangeStart').val() : false,
+                endDate: $('#BirthDateRangeEnd').val() instanceof Date && !isNaN($('#BirthDateRangeEnd').val()) ? $('#BirthDateRangeEnd').val() : false,
+                locale: {
+                    format: 'DD.MM.YYYY',
+                    cancelLabel: 'Clear'
+                }
+            }, function (start, end, label) {
+                $('#BirthDateRangeStart').val(start);
+                $('#BirthDateRangeEnd').val(end);
+            });
+
+            $('input[name="birthDateRange"]').val($('#BirthDateRangeStart').val() + ' - ' + $('#BirthDateRangeEnd').val());
+
+            $('input[name="birthDateRange"]').on('apply.daterangepicker', function (ev, picker) {
+                $(this).val(picker.startDate.format('DD.MM.YYYY') + ' - ' + picker.endDate.format('DD.MM.YYYY'));
+                $('#BirthDateRangeStart').val(picker.startDate.format('DD.MM.YYYY'));
+                $('#BirthDateRangeEnd').val(picker.endDate.format('DD.MM.YYYY'));
+            });
+
+            $('input[name="birthDateRange"]').on('cancel.daterangepicker', function (ev, picker) {
+                $(this).val('');
+                $('#BirthDateRangeStart').val('');
+                $('#BirthDateRangeEnd').val('');
+            });
+
+            $('input[name="birthDateRange"]').on('change', function (ev) {
+                $('#BirthDateRangeStart').val($('input[name="birthDateRange"]').val().split(" - ")[0]);
+                $('#BirthDateRangeEnd').val($('input[name="birthDateRange"]').val().split(" - ")[1]);
+            });
+
+
+        });
+
+    </script>
+}
+@section Styles
+    {
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+}

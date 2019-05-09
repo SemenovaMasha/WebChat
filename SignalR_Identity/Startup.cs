@@ -99,7 +99,8 @@ namespace SignalR_Identity
                 routes.MapRoute(
                     name: "default",
                     //template: "{controller=Rooms}/{action=Index}/{id?}");
-                    template: "{controller=User}/{action=List}/{id?}");
+                    //template: "{controller=User}/{action=List}/{id?}");
+                    template: "{controller=Admin}/{action=Index}/{id?}");
             });
 
             CreateRoles(serviceProvider).Wait();

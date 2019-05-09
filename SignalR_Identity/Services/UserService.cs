@@ -44,6 +44,7 @@ namespace SignalR_Identity.Services
 
                 }
             }
+
             user.BirthDate = viewModel.BirthDate;
             await _userManager.UpdateAsync(user);
             _context.SaveChanges();
@@ -66,9 +67,44 @@ namespace SignalR_Identity.Services
                 {
                     list = list.Where(u => u.UserName.ToLower().Contains(filterViewModel.UserNameFilter.ToLower()));
                 }
+
+                if (filterViewModel.BirthDateRangeStart.HasValue)
+                {
+                    list = list.Where(u => u.BirthDate.CompareTo(filterViewModel.BirthDateRangeStart) >= 0);
+                }
+
+                if (filterViewModel.BirthDateRangeEnd.HasValue)
+                {
+                    list = list.Where(u => u.BirthDate.CompareTo(filterViewModel.BirthDateRangeEnd) <= 0);
+                }
+
+                if (filterViewModel.OnlyDeleted)
+                {
+                    list = list.Where(u => u.IsDeleted);
+                }
+
+                if (filterViewModel.OnlyNotDeleted)
+                {
+                    list = list.Where(u => !u.IsDeleted);
+                }
             }
 
             return list.ToList();
         }
+
+        public void RemoveUser(string id)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            user.IsDeleted = true;
+            _context.SaveChanges();
+        }
+
+        public void RestoreUser(string id)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            user.IsDeleted = false;
+            _context.SaveChanges();
+        }
     }
+
 }

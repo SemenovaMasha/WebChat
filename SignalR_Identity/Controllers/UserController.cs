@@ -36,7 +36,8 @@ namespace SignalR_Identity.Controllers
         [HttpPost]
         public IActionResult SaveProfile(UserProfileViewModel viewModel)
         {
-            if (viewModel.Id == (_userManager.GetUserAsync(HttpContext.User)).Result.Id)
+            if (viewModel.Id == (_userManager.GetUserAsync(HttpContext.User)).Result.Id
+                || (_userManager.IsInRoleAsync(_userManager.GetUserAsync(HttpContext.User).Result, "admin").Result))
             {
                 SignalrUser user = UserService.SaveUser(viewModel).Result;
                 return View("Profile", user);
