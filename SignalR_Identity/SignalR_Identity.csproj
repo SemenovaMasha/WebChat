@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190510094101_SeedUsersData.cs" />
+    <Compile Remove="Migrations\20190510094101_SeedUsersData.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="wwwroot\js\signalr.min.js" />
     <Content Remove="wwwroot\js\signalr.min.js.map" />
   </ItemGroup>

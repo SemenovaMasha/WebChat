@@ -9,7 +9,6 @@ namespace SignalR_Identity.ViewModels
 {
     public class UserListFilterViewModel
     {
-        public List<SignalrUser> Users { get; set; }
         public string UserNameFilter { get; set; }
         public bool OnlyDeleted { get; set; }
         public bool OnlyNotDeleted { get; set; }

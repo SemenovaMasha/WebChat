@@ -25,11 +25,24 @@ namespace SignalR_Identity.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index(UserListFilterViewModel filterViewModel)
+        public IActionResult Index(UserListIndexViewModel viewModel)
         {
-            filterViewModel.Users = UserService.GetAll(filterViewModel);
+            //viewModel.Users = UserService.GetAll(viewModel);
+
+            if (viewModel?.PageViewModel == null)
+            {
+                if (viewModel == null)
+                    viewModel = new UserListIndexViewModel();
+
+                viewModel.PageViewModel = new PageViewModel()
+                {
+                    PageSize = 5,
+                    PageNumber = 1,
+                };
+            }
+
             TempData["returnUrl"] = Request.GetEncodedPathAndQuery();
-            return View(filterViewModel);
+            return View(UserService.GetAll(viewModel));
         }
 
         public IActionResult DeleteUser(string id)

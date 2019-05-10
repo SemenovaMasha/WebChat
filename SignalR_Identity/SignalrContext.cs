@@ -18,5 +18,21 @@ namespace SignalR_Identity
             : base(options)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            Random r = new Random();
+
+            for (int i = 1; i <= 200; i++)
+            {
+                modelBuilder.Entity<SignalrUser>().HasData(
+                    new SignalrUser()
+                        {UserName = "TestUser"+i, BirthDate = new DateTime(r.Next(1970,2007), r.Next(1,12), r.Next(1,28)), CreatingDate = DateTime.Now}
+                );
+            }
+
+        }
     }
 }

@@ -57,39 +57,55 @@ namespace SignalR_Identity.Services
             return _context.Users.ToList();
         }
 
-        public List<SignalrUser> GetAll(UserListFilterViewModel filterViewModel)
+        public UserListIndexViewModel GetAll(UserListIndexViewModel viewModel)
         {
             var list = from u in _context.Users select u;
 
-            if (filterViewModel != null)
+            if (viewModel != null)
             {
-                if (!String.IsNullOrEmpty(filterViewModel.UserNameFilter))
+                if (viewModel.FilterViewModel != null)
                 {
-                    list = list.Where(u => u.UserName.ToLower().Contains(filterViewModel.UserNameFilter.ToLower()));
+                    if (!String.IsNullOrEmpty(viewModel.FilterViewModel.UserNameFilter))
+                    {
+                        list = list.Where(u =>
+                            u.UserName.ToLower().Contains(viewModel.FilterViewModel.UserNameFilter.ToLower()));
+                    }
+
+                    if (viewModel.FilterViewModel.BirthDateRangeStart.HasValue)
+                    {
+                        list = list.Where(
+                            u => u.BirthDate.CompareTo(viewModel.FilterViewModel.BirthDateRangeStart) >= 0);
+                    }
+
+                    if (viewModel.FilterViewModel.BirthDateRangeEnd.HasValue)
+                    {
+                        list = list.Where(u => u.BirthDate.CompareTo(viewModel.FilterViewModel.BirthDateRangeEnd) <= 0);
+                    }
+
+                    if (viewModel.FilterViewModel.OnlyDeleted)
+                    {
+                        list = list.Where(u => u.IsDeleted);
+                    }
+
+                    if (viewModel.FilterViewModel.OnlyNotDeleted)
+                    {
+                        list = list.Where(u => !u.IsDeleted);
+                    }
                 }
 
-                if (filterViewModel.BirthDateRangeStart.HasValue)
+                if (viewModel.PageViewModel != null)
                 {
-                    list = list.Where(u => u.BirthDate.CompareTo(filterViewModel.BirthDateRangeStart) >= 0);
-                }
+                    var count = list.Count();
+                    list = list.Skip((viewModel.PageViewModel.PageNumber - 1) * viewModel.PageViewModel.PageSize)
+                        .Take(viewModel.PageViewModel.PageSize);
 
-                if (filterViewModel.BirthDateRangeEnd.HasValue)
-                {
-                    list = list.Where(u => u.BirthDate.CompareTo(filterViewModel.BirthDateRangeEnd) <= 0);
-                }
-
-                if (filterViewModel.OnlyDeleted)
-                {
-                    list = list.Where(u => u.IsDeleted);
-                }
-
-                if (filterViewModel.OnlyNotDeleted)
-                {
-                    list = list.Where(u => !u.IsDeleted);
+                    viewModel.PageViewModel.TotalPages = count / viewModel.PageViewModel.PageSize;
                 }
             }
+            
+            viewModel.Users = list.ToList();
 
-            return list.ToList();
+            return viewModel;
         }
 
         public void RemoveUser(string id)
