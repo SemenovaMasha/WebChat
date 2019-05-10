@@ -12,8 +12,10 @@ namespace SignalR_Identity.ViewModels
         public string UserNameFilter { get; set; }
         public bool OnlyDeleted { get; set; }
         public bool OnlyNotDeleted { get; set; }
+
         [DataType(DataType.Date)]
         public DateTime? BirthDateRangeStart { get; set; }
+
         [DataType(DataType.Date)]
         public DateTime? BirthDateRangeEnd { get; set; }
     }

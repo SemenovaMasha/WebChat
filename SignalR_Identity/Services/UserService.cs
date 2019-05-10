@@ -99,7 +99,7 @@ namespace SignalR_Identity.Services
                     list = list.Skip((viewModel.PageViewModel.PageNumber - 1) * viewModel.PageViewModel.PageSize)
                         .Take(viewModel.PageViewModel.PageSize);
 
-                    viewModel.PageViewModel.TotalPages = count / viewModel.PageViewModel.PageSize;
+                    viewModel.PageViewModel.TotalPages = (count - 1) / viewModel.PageViewModel.PageSize + 1;
                 }
             }
             

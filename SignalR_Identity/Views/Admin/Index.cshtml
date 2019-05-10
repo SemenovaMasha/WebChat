@@ -5,108 +5,140 @@
 }
 
 <h2>Control panel</h2>
-<form asp-action="Index" method="GET">
+<form asp-action="Index" method="GET" id="IndexForm">
     <div class="form-actions no-color">
         <p>
-            <input type="submit" value="Search" class="btn btn-default" />
+            <input type="submit" value="Search" class="btn btn-default" onclick="$('#PageViewModel\\.PageNumber').val(1);" />
             <a asp-action="Index">Back to Full List</a>
         </p>
     </div>
 
     <table class="table">
         <thead class="thead-light">
-        <tr>
-            <th scope="col">
-                Username
-                <br /><input type="text" name="FilterViewModel.UserNameFilter" id="FilterViewModel.UserNameFilter" class="form-control" value="@Model?.FilterViewModel?.UserNameFilter" />
-            </th>
-            <th scope="col">
-                Birth date
-                <br />
-                <input type="text" name="birthDateRange"  class="form-control" value="" />
+            <tr>
+                <th scope="col">
+                    Username
+                    <br /><input type="text" name="FilterViewModel.UserNameFilter" id="FilterViewModel.UserNameFilter"
+                                 class="form-control" value="@Model?.FilterViewModel?.UserNameFilter" />
+                </th>
+                <th scope="col">
+                    Birth date
+                    <br />
+                    <input type="text" name="birthDateRange" class="form-control" value="" />
 
-                <input type="hidden" name="BirthDateRangeStart" id="BirthDateRangeStart" class="form-control" value="@Model?.FilterViewModel?.BirthDateRangeStart?.ToString("dd.MM.yyyy")" />
-                <input type="hidden" name="BirthDateRangeEnd" id="BirthDateRangeEnd" class="form-control" value="@Model?.FilterViewModel?.BirthDateRangeEnd?.ToString("dd.MM.yyyy")" />
-                @*<input type="text" name="daterange" value="01/01/2018 - 01/15/2018" />*@
-            </th>
-            <th scope="col">
-                Is deleted
-                <br />
-                @*<input type="checkbox" name="IsDeleted" id="IsDeleted" class="form-check-input" value="@Model.IsDeleted" />*@
-                <input asp-for="@Model.FilterViewModel.OnlyDeleted"> only deleted
-                <br/><input asp-for="@Model.FilterViewModel.OnlyNotDeleted"> only not
-            </th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-        </tr>
+                    <input type="hidden" name="FilterViewModel.BirthDateRangeStart" id="FilterViewModel.BirthDateRangeStart"
+                           class="form-control" value="@Model?.FilterViewModel?.BirthDateRangeStart?.ToString("MM.dd.yyyy")" />
+                    <input type="hidden" name="FilterViewModel.BirthDateRangeEnd" id="FilterViewModel.BirthDateRangeEnd"
+                           class="form-control" value="@Model?.FilterViewModel?.BirthDateRangeEnd?.ToString("MM.dd.yyyy")" />
+
+                    @*<input type="text" name="daterange" value="01/01/2018 - 01/15/2018" />*@
+                </th>
+                <th scope="col">
+                    Is deleted
+                    <br />
+                    @*<input type="checkbox" name="IsDeleted" id="IsDeleted" class="form-check-input" value="@Model.IsDeleted" />*@
+                    <input asp-for="@Model.FilterViewModel.OnlyDeleted"> only deleted
+                    <br /><input asp-for="@Model.FilterViewModel.OnlyNotDeleted"> only not
+                </th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
         </thead>
         <tbody>
-        @foreach (var item in Model?.Users)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
-                </td>
-                <td>
-                    @if (item.BirthDate != null)
-                    {
-                        @item.BirthDate.ToString("dd.MM.yyyy")
-                    }
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsDeleted)
-                </td>
-                <td>
-                    <a asp-action="EditProfile" asp-controller="User" asp-route-id="@item.Id"> <i class="fas fa-edit" style="color: #11b316;"></i></a>
-                </td>
-                <td>
-                    @if (!item.IsDeleted)
-                    {
-                        <a asp-action="DeleteUser" asp-route-id="@item.Id">
-                            <i class="far fa-trash-alt" style="color: #d60f0f;"></i>
-                        </a>
-                    }
-                    else
-                    {
-                        <a asp-action="RestoreUser" asp-route-id="@item.Id">
-                            <i class="far fa-arrow-alt-circle-up" style="color: #daa520;"></i>
-                        </a>
-                    }
-                </td>
-                @*<td>
+            @foreach (var item in Model?.Users)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    </td>
+                    <td>
+                        @if (item.BirthDate != null)
+                        {
+                            @item.BirthDate.ToString("dd.MM.yyyy")
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsDeleted)
+                    </td>
+                    <td>
+                        <a asp-action="EditProfile" asp-controller="User" asp-route-id="@item.Id"> <i class="fas fa-edit" style="color: #11b316;"></i></a>
+                    </td>
+                    <td>
+                        @if (!item.IsDeleted)
+                        {
+                            <a asp-action="DeleteUser" asp-route-id="@item.Id">
+                                <i class="far fa-trash-alt" style="color: #d60f0f;"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-action="RestoreUser" asp-route-id="@item.Id">
+                                <i class="far fa-arrow-alt-circle-up" style="color: #daa520;"></i>
+                            </a>
+                        }
+                    </td>
+                    @*<td>
                             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                             <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                             <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                         </td>*@
 
-            </tr>
-        }
+                </tr>
+            }
         </tbody>
     </table>
-    @*@if (Model.PageViewModel.HasPreviousPage)
-    {
-        <a asp-action="Index"
-           asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
-           asp-route-name="@(Model.FilterViewModel.SelectedName)"
-           asp-route-company="@(Model.FilterViewModel.SelectedCompany)"
-           asp-route-sortorder="@(Model.SortViewModel.Current)"
-           class="btn btn-default btn">
-            <i class="glyphicon glyphicon-chevron-left"></i>
-            Назад
-        </a>
-    }
-    @if (Model.PageViewModel.HasNextPage)
-    {
-        <a asp-action="Index"
-           asp-route-page="@(Model.PageViewModel.PageNumber + 1)"
-           asp-route-name="@(Model.FilterViewModel.SelectedName)"
-           asp-route-company="@(Model.FilterViewModel.SelectedCompany)"
-           asp-route-sortorder="@(Model.SortViewModel.Current)"
-           class="btn btn-default btn">
-            Вперед
-            <i class="glyphicon glyphicon-chevron-right"></i>
-        </a>
-    }*@
+
+    <input type="hidden" name="PageViewModel.PageNumber" id="PageViewModel.PageNumber"
+           value="@Model?.PageViewModel.PageNumber" />
+    <input type="hidden" name="PageViewModel.TotalPages" id="PageViewModel.TotalPages"
+           value="@Model?.PageViewModel.TotalPages" />
+
+    <select asp-for="@Model.PageViewModel.PageSize" class="form-control" style="width: 10%" onchange="$('#PageViewModel\\.PageNumber').val(1); $('#IndexForm').submit();"
+            asp-items="@(new SelectList(new int[]{20,50,100}))" >
+    </select>
+
+    <nav style="text-align: center;">
+        <ul class="pagination">
+            <li class="page-item @(Model.PageViewModel.HasPreviousPage? "" : "disabled")">
+                <a class="page-link" href="#" onclick="$('#PageViewModel\\.PageNumber').val(@(Model?.PageViewModel.PageNumber +-1));$('#IndexForm').submit();" tabindex="-1">
+                    <i class="glyphicon glyphicon-chevron-left"></i>
+                    Prev
+                </a>
+            </li>
+            
+            @{
+                int firstPage = Model.PageViewModel.PageNumber - 2;
+                if (firstPage < 1) {firstPage = 1;}
+                int lastPage = firstPage + 4;
+                if (lastPage > Model.PageViewModel.TotalPages)
+                {lastPage = Model.PageViewModel.TotalPages;}
+            }
+
+            @for (int p = firstPage; p <= lastPage; p++)
+            {
+                if (p == Model.PageViewModel.PageNumber)
+                {
+                    <li class="page-item active">
+                        <a class="page-link">@p <span class="sr-only">(current)</span></a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="#"
+                           onclick="$('#PageViewModel\\.PageNumber').val(@p);  $('#IndexForm').submit();">@p</a>
+                    </li>
+                }
+            }
+
+            <li class="page-item @(Model.PageViewModel.HasNextPage? "" : "disabled")">
+                <a class="page-link" href="#" onclick="$('#PageViewModel\\.PageNumber').val(@(Model?.PageViewModel.PageNumber + 1));$('#IndexForm').submit();">
+                    Next
+                    <i class="glyphicon glyphicon-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
 </form>
 @section Scripts
     {
@@ -121,42 +153,44 @@
                 opens: 'left',
                 autoUpdateInput: false,
                 linkedCalendars: false,
-                startDate: $('#BirthDateRangeStart').val() instanceof Date && !isNaN($('#BirthDateRangeStart').val()) ? $('#BirthDateRangeStart').val() : false,
-                endDate: $('#BirthDateRangeEnd').val() instanceof Date && !isNaN($('#BirthDateRangeEnd').val()) ? $('#BirthDateRangeEnd').val() : false,
+                startDate: $('#FilterViewModel\\.BirthDateRangeStart').val() != ''
+                    ? moment($('#FilterViewModel\\.BirthDateRangeStart').val(), "MM.DD.YYYY").format("DD.MM.YYYY") : false,
+                endDate: $('#FilterViewModel\\.BirthDateRangeEnd').val() != ''
+                    ? moment($('#FilterViewModel\\.BirthDateRangeEnd').val(), "MM.DD.YYYY").format("DD.MM.YYYY") : false,
                 locale: {
                     format: 'DD.MM.YYYY',
                     cancelLabel: 'Clear'
                 }
             }, function (start, end, label) {
-                $('#BirthDateRangeStart').val(start);
-                $('#BirthDateRangeEnd').val(end);
             });
 
-            $('input[name="birthDateRange"]').val($('#BirthDateRangeStart').val() + ' - ' + $('#BirthDateRangeEnd').val());
+            $('input[name="birthDateRange"]').val( ($('#FilterViewModel\\.BirthDateRangeStart').val() != ''
+                ? moment($('#FilterViewModel\\.BirthDateRangeStart').val(), "MM.DD.YYYY").format("DD.MM.YYYY") : '')
+                + ' - ' + ($('#FilterViewModel\\.BirthDateRangeEnd').val() != ''
+                ? moment($('#FilterViewModel\\.BirthDateRangeEnd').val(), "MM.DD.YYYY").format("DD.MM.YYYY") : ''));
 
             $('input[name="birthDateRange"]').on('apply.daterangepicker', function (ev, picker) {
                 $(this).val(picker.startDate.format('DD.MM.YYYY') + ' - ' + picker.endDate.format('DD.MM.YYYY'));
-                $('#BirthDateRangeStart').val(picker.startDate.format('DD.MM.YYYY'));
-                $('#BirthDateRangeEnd').val(picker.endDate.format('DD.MM.YYYY'));
+                $('#FilterViewModel\\.BirthDateRangeStart').val(picker.startDate.format('MM.DD.YYYY'));
+                $('#FilterViewModel\\.BirthDateRangeEnd').val(picker.endDate.format('MM.DD.YYYY'));
+                
             });
 
             $('input[name="birthDateRange"]').on('cancel.daterangepicker', function (ev, picker) {
                 $(this).val('');
-                $('#BirthDateRangeStart').val('');
-                $('#BirthDateRangeEnd').val('');
+                $('#FilterViewModel\\.BirthDateRangeStart').val('');
+                $('#FilterViewModel\\.BirthDateRangeEnd').val('');
             });
 
             $('input[name="birthDateRange"]').on('change', function (ev) {
-                $('#BirthDateRangeStart').val($('input[name="birthDateRange"]').val().split(" - ")[0]);
-                $('#BirthDateRangeEnd').val($('input[name="birthDateRange"]').val().split(" - ")[1]);
+                $('#FilterViewModel\\.BirthDateRangeStart').val(moment($('input[name="birthDateRange"]').val().split(" - ")[0], "MM.DD.YYYY").format("DD.MM.YYYY"));
+                $('#FilterViewModel\\.BirthDateRangeEnd').val(moment($('input[name="birthDateRange"]').val().split(" - ")[1], "MM.DD.YYYY").format("DD.MM.YYYY"));
             });
-
-
         });
 
     </script>
 }
 @section Styles
-    {
+{
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 }

@@ -13,7 +13,7 @@ using SignalR_Identity.ViewModels;
 
 namespace SignalR_Identity.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly UserService UserService;
@@ -27,18 +27,21 @@ namespace SignalR_Identity.Controllers
 
         public IActionResult Index(UserListIndexViewModel viewModel)
         {
-            //viewModel.Users = UserService.GetAll(viewModel);
+            if (viewModel == null)
+                viewModel = new UserListIndexViewModel();
 
-            if (viewModel?.PageViewModel == null)
+            if (viewModel.PageViewModel == null)
             {
-                if (viewModel == null)
-                    viewModel = new UserListIndexViewModel();
-
                 viewModel.PageViewModel = new PageViewModel()
                 {
-                    PageSize = 5,
+                    PageSize = 20,
                     PageNumber = 1,
                 };
+            }
+
+            if (viewModel.FilterViewModel == null)
+            {
+                viewModel.FilterViewModel = new UserListFilterViewModel();
             }
 
             TempData["returnUrl"] = Request.GetEncodedPathAndQuery();
