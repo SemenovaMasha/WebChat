@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -68,10 +69,21 @@ namespace SignalR_Identity
             services.AddSingleton<IAuthorizationHandler, RoomInfoEditAuthorizationHandler>();
 
             services.AddHostedService<RemoveOldMessagesService>();
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+               
+                .AddVkontakte(options =>
+                {
+                    options.ClientId = "6984950";
+                    options.ClientSecret = "uYeM09sQQVapJ1owS2F5";
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider, UserManager<SignalrUser> userManager)
         {
             if (env.IsDevelopment())
             {
@@ -89,6 +101,7 @@ namespace SignalR_Identity
 
             app.UseAuthentication();
 
+
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chat");
@@ -104,6 +117,7 @@ namespace SignalR_Identity
             });
 
             CreateRoles(serviceProvider).Wait();
+            ApplicationDbInitializer.SeedUsers(userManager);
         }
 
         private async Task CreateRoles(IServiceProvider serviceProvider)

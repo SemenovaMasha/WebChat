@@ -71,6 +71,18 @@ namespace SignalR_Identity.Services
                             u.UserName.ToLower().Contains(viewModel.FilterViewModel.UserNameFilter.ToLower()));
                     }
 
+                    if (viewModel.FilterViewModel.BirthDateRangeStart.HasValue && viewModel.FilterViewModel
+                                                                                   .BirthDateRangeEnd.HasValue
+                                                                               && viewModel.FilterViewModel
+                                                                                   .BirthDateRangeStart.Value
+                                                                                   .CompareTo(viewModel.FilterViewModel
+                                                                                       .BirthDateRangeEnd) >= 0)
+                    {
+                        (viewModel.FilterViewModel.BirthDateRangeStart, viewModel.FilterViewModel.BirthDateRangeEnd) =
+                            (viewModel.FilterViewModel.BirthDateRangeEnd,
+                                viewModel.FilterViewModel.BirthDateRangeStart);
+                    }
+
                     if (viewModel.FilterViewModel.BirthDateRangeStart.HasValue)
                     {
                         list = list.Where(
@@ -111,7 +123,8 @@ namespace SignalR_Identity.Services
         public void RemoveUser(string id)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
-            user.IsDeleted = true;
+            if(user.UserName != "admin")
+                user.IsDeleted = true;
             _context.SaveChanges();
         }
 

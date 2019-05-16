@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20190510094101_SeedUsersData.cs" />
     <Compile Remove="Migrations\20190510094101_SeedUsersData.Designer.cs" />
+    <Compile Remove="Migrations\20190510094812_SeedUsersData.cs" />
+    <Compile Remove="Migrations\20190510094812_SeedUsersData.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -125,6 +127,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNet.Security.OAuth.Vkontakte" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />

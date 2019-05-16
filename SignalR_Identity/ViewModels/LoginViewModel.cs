@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 
 namespace SignalR_Identity.ViewModels
 {
@@ -22,5 +24,7 @@ namespace SignalR_Identity.ViewModels
         public bool RememberMe { get; set; }
 
         public string ReturnUrl { get; set; }
+
+        public AuthenticationScheme[] AuthenticationSchemes { get; set; }
     }
 }
