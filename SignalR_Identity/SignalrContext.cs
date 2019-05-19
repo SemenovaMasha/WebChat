@@ -37,7 +37,7 @@ namespace SignalR_Identity
                 if (userManager.FindByNameAsync("TestUser" + i).Result == null)
                 {
                     var user = new SignalrUser()
-                    { UserName = "TestUser" + i, BirthDate = new DateTime(r.Next(1970, 2007), r.Next(1, 12), r.Next(1, 28)), CreatingDate = DateTime.Now };
+                    { UserName = "TestUser" + i, BirthDate = new DateTime(r.Next(1970, 2007), r.Next(1, 12), r.Next(1, 28)), CreatingDate = DateTime.Now ,EmailConfirmed = true};
 
                     IdentityResult result = userManager.CreateAsync(user, "testuser" + i).Result;
 

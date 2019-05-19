@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SignalR_Identity.Extensions;
@@ -20,11 +22,13 @@ namespace SignalR_Identity.Controllers
         private readonly UserManager<SignalrUser> _userManager;
         private readonly SignInManager<SignalrUser> _signInManager;
         private Task<SignalrUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
+        private readonly IEmailSender _emailSender;
 
-        public AccountController(UserManager<SignalrUser> userManager, SignInManager<SignalrUser> signInManager)
+        public AccountController(UserManager<SignalrUser> userManager, SignInManager<SignalrUser> signInManager, IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailSender = emailSender;
         }
 
         [HttpGet]
@@ -32,6 +36,24 @@ namespace SignalR_Identity.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ApplicationException($"Unable to load user with ID '{userId}'.");
+            }
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -41,12 +63,27 @@ namespace SignalR_Identity.Controllers
                 SignalrUser user = new SignalrUser { UserName = model.Name };
                 user.BirthDate = model.BirthDate;
                 user.CreatingDate = DateTime.Now;
+                user.Email = model.Email;
 
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, false);
-                    return RedirectToAction("MyProfile", "User");
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = Url.Action(
+                        action: "ConfirmEmail",
+                        controller: "Account",
+                        values: new { userId =  user.Id, code = code },
+                        protocol: Request.Scheme);
+
+                    await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
+                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                    TempData["ModelErrors"] = "Confirm your registration";
+                    return RedirectToAction("Login");
+
+
+                    //await _signInManager.SignInAsync(user, false);
+                    //return RedirectToAction("MyProfile", "User");
                 }
                 else
                 {
@@ -62,7 +99,7 @@ namespace SignalR_Identity.Controllers
         [HttpGet]
         public IActionResult Login(string returnUrl = null)
         {
-            object errData = TempData["ModelErrorAccountIsDeleted"];
+            object errData = TempData["ModelErrors"];
             if (errData != null)
             {
                 ModelState.AddModelError("", errData.ToString());
@@ -95,7 +132,7 @@ namespace SignalR_Identity.Controllers
             {
                 _signInManager.SignOutAsync().Wait();
                 
-                TempData["ModelErrorAccountIsDeleted"] = "Your account was deleted";
+                TempData["ModelErrors"] = "Your account was deleted";
                 return RedirectToAction("Login");
                 //return View("Login",new LoginViewModel(){ AuthenticationSchemes = HttpContext.GetExternalProvidersAsync().Result });
             }
@@ -128,6 +165,12 @@ namespace SignalR_Identity.Controllers
             {
                 return BadRequest();
             }
+            if (result.IsNotAllowed)
+            {
+                TempData["ModelErrors"] = "Confirm your account";
+                ModelState.AddModelError("", "Confirm your account");
+                return RedirectToAction("Login", "Account");
+            }
             else
             {
                 ViewData["ReturnUrl"] = returnUrl;
@@ -156,8 +199,22 @@ namespace SignalR_Identity.Controllers
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return RedirectToAction("MyProfile", "User");
+                        //TODO 
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        var callbackUrl = Url.Action(
+                            action: "ConfirmEmail",
+                            controller: "Account",
+                            values: new { userId = user.Id, code = code },
+                            protocol: Request.Scheme);
+
+                        await _emailSender.SendEmailAsync(model.Email, "Confirm your email",
+                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                        TempData["ModelErrors"] = "Confirm your registration";
+                        return RedirectToAction("Login");
+
+                        //await _signInManager.SignInAsync(user, isPersistent: false);
+                        //return RedirectToAction("MyProfile", "User");
                     }
                 }
             }
@@ -194,9 +251,13 @@ namespace SignalR_Identity.Controllers
                             return RedirectToAction("MyProfile", "User");
                         }
                     }
+                    else if (result.IsNotAllowed)
+                    {
+                        ModelState.AddModelError("", "Confirm your account");
+                    }
                     else
                     {
-                        ModelState.AddModelError("", "Incorrect login or password");
+                        ModelState.AddModelError("", "Incorrect username or password");
                     }
 
                 }

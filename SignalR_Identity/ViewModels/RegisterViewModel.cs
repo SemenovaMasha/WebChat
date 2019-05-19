@@ -27,5 +27,8 @@ namespace SignalR_Identity.ViewModels
         [Display(Name = "Birth date")]
         public DateTime BirthDate { get; set; }
 
+        [DataType(DataType.EmailAddress)]
+        public string Email { get; set; }
+
     }
 }
