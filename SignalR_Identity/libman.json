@@ -28,6 +28,19 @@
         "croppie.min.css",
         "croppie.min.css.map"
       ]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "react@16.8.6",
+      "destination": "wwwroot/lib/react/"
+    },
+    {
+      "library": "react-dom@16.8.6",
+      "destination": "wwwroot/lib/react-dom/",
+      "files": [
+        "umd/react-dom.production.min.js",
+        "umd/react-dom.development.js"
+      ]
     }
   ]
 }

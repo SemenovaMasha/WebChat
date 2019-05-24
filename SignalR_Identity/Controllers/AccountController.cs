@@ -230,7 +230,7 @@ namespace SignalR_Identity.Controllers
             if (ModelState.IsValid)
             {
                 var user = _userManager.FindByNameAsync(model.Name).Result;
-                if (user.IsDeleted)
+                if (user!=null&&user.IsDeleted)
                 {
                     ModelState.AddModelError("", "Your account was deleted");
                 }

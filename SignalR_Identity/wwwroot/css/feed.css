@@ -1,0 +1,13 @@
+﻿#feedContent li {
+    margin-bottom: 15px;
+}
+
+#feedContent li p {
+    white-space: pre-line;
+}
+
+#feedContent img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+}

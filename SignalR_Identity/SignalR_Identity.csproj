@@ -11,6 +11,8 @@
     <Compile Remove="Migrations\20190510094101_SeedUsersData.Designer.cs" />
     <Compile Remove="Migrations\20190510094812_SeedUsersData.cs" />
     <Compile Remove="Migrations\20190510094812_SeedUsersData.Designer.cs" />
+    <Compile Remove="Migrations\20190524174049_PostAuthor.cs" />
+    <Compile Remove="Migrations\20190524174049_PostAuthor.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -129,9 +131,19 @@
 
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.Vkontakte" Version="2.0.1" />
+    <PackageReference Include="JavaScriptEngineSwitcher.ChakraCore" Version="3.0.9" />
+    <PackageReference Include="JavaScriptEngineSwitcher.ChakraCore.Native.win-x64" Version="3.1.1" />
+    <PackageReference Include="JavaScriptEngineSwitcher.Extensions.MsDependencyInjection" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
+    <PackageReference Include="React.AspNet" Version="4.0.0" />
+    <PackageReference Include="React.Core" Version="4.1.1" />
     <PackageReference Include="Sendgrid" Version="9.11.0" />
     <PackageReference Include="SendGridSharp" Version="1.1.0" />
   </ItemGroup>

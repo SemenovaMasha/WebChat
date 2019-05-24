@@ -4,13 +4,13 @@
 }
 
 <div class="row " style="margin-top: 30px">
-    <div class="col-sm-2" ></div>
+    <div class="col-sm-2"></div>
     <div class="col-sm-4">
         @{
             string imageName = Model.CropAvatar == null ? "default/FullAvatar.png" : Model.CropAvatar.Path;
         }
         <img src="@(Url.Content("~/images/avatars/")+imageName)" style="margin: auto;"
-             alt="" class="img-rounded img-responsive"/>
+             alt="" class="img-rounded img-responsive" />
     </div>
     <div class="col-sm-4">
         <div style=" margin: auto;">
@@ -32,3 +32,40 @@
         </div>
     </div>
 </div>
+<div id="feedContent">
+
+</div>
+
+@section Scripts
+    {
+    <script src="~/lib/react/umd/react.development.js"></script>
+    <script src="~/lib/react-dom/umd/react-dom.development.js"></script>
+
+    <script src="~/js/React/FeedComponent.jsx"></script>
+    <script src="~/js/React/Post.jsx"></script>
+    <script src="~/js/React/PostForm.jsx"></script>
+    <script src="~/js/React/PostsList.jsx"></script>
+    <script>
+        ReactDOM.render(
+            React.createElement(FeedComponent,
+                {
+                    userId: '@Model.Id',
+                    @{
+                        string isAuth = User.Identity.IsAuthenticated?"true":"false";
+                        string currentUsername = "";
+                        if (User.Identity.IsAuthenticated)
+                        {
+                            currentUsername = User.Identity.Name;
+                        }
+                    }
+                    isAuth: @isAuth,
+                    currentUsername: '@currentUsername'
+                }, null),
+            document.getElementById('feedContent')
+        );
+    </script>
+}
+@section Styles
+{
+    <link rel="Stylesheet" type="text/css" href="@Url.Content("~/css/feed.css")">
+}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JavaScriptEngineSwitcher.ChakraCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -15,10 +16,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using React.AspNet;
 using SignalR_Identity.Filters;
 using SignalR_Identity.Hubs;
 using SignalR_Identity.Models;
 using SignalR_Identity.Services;
+using JavaScriptEngineSwitcher.Extensions.MsDependencyInjection;
 
 namespace SignalR_Identity
 {
@@ -40,7 +43,7 @@ namespace SignalR_Identity
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            
+
             services.AddDbContext<SignalrContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -52,6 +55,7 @@ namespace SignalR_Identity
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
                 options.SignIn.RequireConfirmedEmail = true;
+                //options.User.RequireUniqueEmail = true;
             })
                 .AddEntityFrameworkStores<SignalrContext>()
                 .AddDefaultTokenProviders();
@@ -59,13 +63,19 @@ namespace SignalR_Identity
             services.AddTransient<IEmailSender, EmailSender>();
             services.Configure<AuthMessageSenderOptions>(Configuration);
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddReact();
+            services.AddJsEngineSwitcher(options => options.DefaultEngineName = ChakraCoreJsEngine.EngineName)
+                .AddChakraCore();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            
+
             services.AddSignalR();
 
             services.AddScoped<MessageService>();
             services.AddScoped<UserService>();
             services.AddScoped<RoomService>();
+            services.AddScoped<PostService>();
 
             services.AddAuthorization(options =>
             {
@@ -80,12 +90,14 @@ namespace SignalR_Identity
                 {
                     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 })
-               
+
                 .AddVkontakte(options =>
                 {
                     options.ClientId = "6984950";
                     options.ClientSecret = "uYeM09sQQVapJ1owS2F5";
                 });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -100,8 +112,8 @@ namespace SignalR_Identity
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
+            app.UseReact(configuration => {});
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
@@ -120,6 +132,10 @@ namespace SignalR_Identity
                     //template: "{controller=Rooms}/{action=Index}/{id?}");
                     //template: "{controller=User}/{action=List}/{id?}");
                     template: "{controller=Admin}/{action=Index}/{id?}");
+                routes.MapRoute(
+                     name: "defaultApi",
+                     template: "api/{controller}/{action}/{id?}"
+                );
             });
 
             CreateRoles(serviceProvider).Wait();
@@ -142,11 +158,12 @@ namespace SignalR_Identity
             var poweruser = new SignalrUser()
             {
                 UserName = "admin",
+                EmailConfirmed = true
             };
 
             string UserPassword = "admin";
             var _user = await UserManager.FindByNameAsync("admin");
-            
+
             if (_user == null)
             {
                 var createPowerUser = await UserManager.CreateAsync(poweruser, UserPassword);

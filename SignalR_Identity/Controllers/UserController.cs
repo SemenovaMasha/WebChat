@@ -18,6 +18,7 @@ namespace SignalR_Identity.Controllers
         private readonly UserManager<SignalrUser> _userManager;
         private readonly UserService UserService;
         private Task<SignalrUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
+
         public UserController(UserManager<SignalrUser> userManager, SignalrContext context, UserService userService)
         {
             _userManager = userManager;
@@ -50,7 +51,9 @@ namespace SignalR_Identity.Controllers
 
         public IActionResult Profile(string id)
         {
-            SignalrUser user = _userManager.Users.Include(u=>u.CropAvatar).FirstOrDefault(u=>u.Id == id);
+            SignalrUser user = _userManager.Users
+                .Include(u=>u.CropAvatar)
+                .FirstOrDefault(u=>u.Id == id);
 
             return View(user);
         }

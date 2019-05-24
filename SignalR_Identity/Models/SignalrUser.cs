@@ -15,5 +15,7 @@ namespace SignalR_Identity.Models
         public DateTime CreatingDate { get; set; }
         public List<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
         public Image CropAvatar { get; set; }
+        public Guid? CropAvatarId { get; set; }
+        public List<UserLike> UserLikes { get; set; } = new List<UserLike>();
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SignalR_Identity;
 
 namespace SignalR_Identity.Migrations
 {
     [DbContext(typeof(SignalrContext))]
-    partial class SignalrContextModelSnapshot : ModelSnapshot
+    [Migration("20190523142129_UserPosts")]
+    partial class UserPosts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,8 +186,6 @@ namespace SignalR_Identity.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AuthorId");
-
                     b.Property<DateTime>("Date");
 
                     b.Property<string>("Text");
@@ -193,8 +193,6 @@ namespace SignalR_Identity.Migrations
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
 
                     b.HasIndex("UserId");
 
@@ -363,10 +361,6 @@ namespace SignalR_Identity.Migrations
 
             modelBuilder.Entity("SignalR_Identity.Models.Post", b =>
                 {
-                    b.HasOne("SignalR_Identity.Models.SignalrUser", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId");
-
                     b.HasOne("SignalR_Identity.Models.SignalrUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");

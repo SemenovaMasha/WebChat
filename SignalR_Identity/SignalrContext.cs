@@ -14,6 +14,9 @@ namespace SignalR_Identity
         public DbSet<Message> Messages { get; set; }
         public DbSet<ChatGroup> ChatGroups { get; set; }
         public DbSet<UserGroup> UserGroups { get; set; }
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<UserLike> UserLikes { get; set; }
+        public DbSet<Image> Image { get; set; }
 
         public SignalrContext(DbContextOptions<SignalrContext> options)
             : base(options)
