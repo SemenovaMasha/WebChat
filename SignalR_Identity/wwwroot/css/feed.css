@@ -14,3 +14,69 @@
 #feedContent i.fa-remove {
     color: #8f8f8f;
 }
+#feedContent .postRow {
+    padding: 0px 10px;
+}
+#feedContent .postHeader {
+    border-bottom: 1px solid #ddd;
+    height: 40px;
+}
+#feedContent .postBottom {
+    border-top: 1px solid #ddd;
+    height: 20px;
+}
+#feedContent .postHeader>img, #feedContent .postHeader>p{
+    display: inline-block;
+    float: left;
+}
+ #feedContent .postHeader>p{
+     padding-top: 4px;
+     float: left;
+}
+ #feedContent .postHeader>img{
+     margin-right: 15px;
+     margin-left: 10px;
+     margin-bottom:5px;
+}
+#feedContent .postHeader > a {
+    float: right;
+    margin-top: 4px;
+}
+ #feedContent .postContainer{
+     padding: 10px 30px;
+}
+#feedContent .postBottom>div, #feedContent .postBottom>a {
+    display: inline-block;
+    float: left;
+}
+
+#feedContent .postBottom>a {
+    float: right;
+    width: 30px;
+}
+
+#feedContent .postBottom > div {
+    padding-top: 5px;
+    font-size: 11px;
+}
+#feedContent .postBottom {
+    height: 35px;
+    padding: 0px 30px;
+    padding-top: 10px;
+}
+#feedContent #newPostForm {
+    margin-bottom: 20px;
+}
+
+#feedContent #newPostForm textarea {
+    margin-bottom: 10px;
+    border-radius: 10px;
+    height: 70px;
+}
+
+#feedContent #newPostForm button {
+    float: right;
+}
+#feedContent #newPostForm .row {
+    margin: 0;
+}

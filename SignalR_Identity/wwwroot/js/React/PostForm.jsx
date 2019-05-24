@@ -67,8 +67,12 @@
     render() {
         return (
             <form onSubmit={this.handleSubmit} id="newPostForm">
-                <textarea value={this.state.text} onChange={this.handleChange} id="newPostText"/>
-                <input type="submit" value="Submit" />
+                <textarea className="form-control" value={this.state.text} onChange={this.handleChange} id="newPostText"/>
+                <div className="row">
+                    <div className="col-12">
+                        <button className=" btn btn-primary" type="submit" value="Submit" >Submit</button>
+                    </div>
+                </div>
             </form>
         );
     }

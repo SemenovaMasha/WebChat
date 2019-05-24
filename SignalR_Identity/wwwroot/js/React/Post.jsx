@@ -2,12 +2,11 @@
 class Post extends React.Component {
     constructor(props) {
         super(props);
-        
 
         this.state = {
             id: props.id,
             text: props.text,
-            date: props.date,
+            date: moment(props.date, "YYYY-MM-DDTHH:mm:SSS").format("HH:mm DD.MM.YY"),
             liked: props.liked,
             isOwner: props.isOwner,
             userAuth: props.userAuth,
@@ -15,6 +14,7 @@ class Post extends React.Component {
             authorName: props.authorName,
             removeHandler: props.removeHandler
         }
+
         this.changeLike = this.changeLike.bind(this);
         this.deletePost = this.deletePost.bind(this);
     }
@@ -51,7 +51,7 @@ class Post extends React.Component {
     render() {
         if (this.state.userAuth) {
             likeSection = <a href="#" onClick={(e) => this.changeLike(e)}> 
-                    <svg width="4%" height="4%" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink"
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink"
                         {...(this.state.liked &&
                         {
                             viewBox:"0 0 20 20",
@@ -77,17 +77,21 @@ class Post extends React.Component {
         } else {
             deleteSection = <div></div>;
         }
-        avatarPath = '/images/avatars'+this.props.authorAvatarPath ;
+        avatarPath = '/images/avatars' + this.state.authorAvatarPath ;
         return (
             <li className="list-group-item">
-                {deleteSection}
-                <img src={avatarPath}/>
-                <p>{this.props.authorAvatarPath}</p>
-                <p>{this.props.authorName}</p>
-                <p>{this.props.text}</p>
-                <div>{this.props.date}</div>
-                <div>{this.props.liked.toString()}</div>
-                {likeSection}
+                <div className="row postRow postHeader">
+                    <img src={avatarPath} className="img-rounded img-responsive"/>
+                    <p>{this.state.authorName}</p>
+                    {deleteSection}
+                </div>
+                <div className="row postRow postContainer">
+                    <p>{this.state.text}</p>
+                </div>
+                <div className="row postRow postBottom">
+                    <div>{this.state.date}</div>
+                    {likeSection}
+                </div>
             </li>
         );
     }

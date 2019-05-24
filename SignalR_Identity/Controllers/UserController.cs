@@ -64,7 +64,7 @@ namespace SignalR_Identity.Controllers
 
         public IActionResult List()
         {
-            return View(_userManager.Users.Include(u => u.CropAvatar));
+            return View(_userManager.Users.Include(u => u.CropAvatar).OrderByDescending(u=>u.CreatingDate));
         }
         
     }
