@@ -16,5 +16,6 @@ namespace SignalR_Identity.ViewModels
         public string CurrentUsername { get; set; }
         public string AuthorName { get; set; }
         public string AuthorAvatarPath { get; set; }
+        public bool IsOwner { get; set; }
     }
 }

@@ -2,19 +2,21 @@
 class Post extends React.Component {
     constructor(props) {
         super(props);
-
-        console.log(props);
+        
 
         this.state = {
             id: props.id,
             text: props.text,
             date: props.date,
             liked: props.liked,
+            isOwner: props.isOwner,
             userAuth: props.userAuth,
             authorAvatarPath: props.authorAvatarPath,
-            authorName: props.authorName
+            authorName: props.authorName,
+            removeHandler: props.removeHandler
         }
         this.changeLike = this.changeLike.bind(this);
+        this.deletePost = this.deletePost.bind(this);
     }
 
     changeLike(e) {
@@ -28,6 +30,22 @@ class Post extends React.Component {
                 {
                     method: 'POST'
                 });
+    }
+
+    deletePost(e) {
+        e.preventDefault();
+        
+        this.state.removeHandler(this.state.id);
+        
+        fetch('https://localhost:44358/api/Posts/DeletePost?postId=' + this.state.id,
+                {
+                    method: 'DELETE'
+                })
+            .then(result => result.json())
+            .then(deleted => {
+                //if (deleted)
+                //    this.state.removeHandler(this.state.id);
+            });
     }
 
     render() {
@@ -52,9 +70,17 @@ class Post extends React.Component {
         } else {
             likeSection = <div></div>;
         }
+        if (this.state.isOwner) {
+            deleteSection = <a href="#" onClick={(e) => this.deletePost(e)}>
+                <i className="fa fa-remove"></i>
+            </a>;
+        } else {
+            deleteSection = <div></div>;
+        }
         avatarPath = '/images/avatars'+this.props.authorAvatarPath ;
         return (
             <li className="list-group-item">
+                {deleteSection}
                 <img src={avatarPath}/>
                 <p>{this.props.authorAvatarPath}</p>
                 <p>{this.props.authorName}</p>

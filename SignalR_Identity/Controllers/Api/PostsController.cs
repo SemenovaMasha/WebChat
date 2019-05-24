@@ -28,13 +28,19 @@ namespace SignalR_Identity.Controllers.Api
         [HttpPost]
         public PostViewModel AddNewPost([FromBody]PostViewModel viewModel)
         {
-            return PostService.AddNewPost(viewModel);
+            return PostService.AddNewPost(viewModel, GetCurrentUser());
         }
 
         [HttpPost]
         public void ChangeLike(Guid postId)
         {
             PostService.ChangeLike(postId,GetCurrentUser().Id);
+        }
+
+        [HttpDelete]
+        public bool DeletePost(Guid postId)
+        {
+            return PostService.DeletePost(postId,GetCurrentUser().Id);
         }
     }
 }

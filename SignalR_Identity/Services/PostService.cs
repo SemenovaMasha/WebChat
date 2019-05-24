@@ -48,6 +48,7 @@ namespace SignalR_Identity.Services
                 {
                     postViewModel.UserAuth = true;
                     postViewModel.Liked = post.UserLikes.Select(l => l.SignalrUserId).Contains(currentUser.Id);
+                    postViewModel.IsOwner = currentUser.Id == userId;
                 }
 
                 SignalrUser author = _context.Users.FirstOrDefault(u => u.Id == post.AuthorId);
@@ -72,7 +73,7 @@ namespace SignalR_Identity.Services
             return viewModel;
         }
 
-        public PostViewModel AddNewPost(PostViewModel viewModel)
+        public PostViewModel AddNewPost(PostViewModel viewModel, SignalrUser currentUser)
         {
             SignalrUser author = _context.Users.FirstOrDefault(u => u.UserName == viewModel.CurrentUsername);
             Post newPost = new Post()
@@ -87,6 +88,7 @@ namespace SignalR_Identity.Services
             viewModel.Date = newPost.Date;
             viewModel.AuthorName = viewModel.CurrentUsername;
             viewModel.AuthorAvatarPath = GetUserAvatarPath(author);
+            viewModel.IsOwner = currentUser.Id == viewModel.UserId;
             viewModel.Id = newPost.Id;
 
             return viewModel;
@@ -109,6 +111,20 @@ namespace SignalR_Identity.Services
             }
 
             _context.SaveChanges();
+        }
+
+        public bool DeletePost(Guid postId, string currentUserId)
+        {
+            Post post = _context.Posts.FirstOrDefault(p => p.Id == postId);
+            if (post!=null && post.AuthorId == currentUserId)
+            {
+                _context.Posts.Remove(post);
+                _context.SaveChanges();
+                return true;
+            }
+
+            return false;
+
         }
     }
 }

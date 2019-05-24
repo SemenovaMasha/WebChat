@@ -11,3 +11,6 @@
     height: 30px;
     object-fit: cover;
 }
+#feedContent i.fa-remove {
+    color: #8f8f8f;
+}

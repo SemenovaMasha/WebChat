@@ -6,6 +6,7 @@
             userId: props.userId,
             posts: []
         }
+        this.removeHandler = this.removeHandler.bind(this);
     }
 
      addNewPost(post) {
@@ -15,17 +16,6 @@
     }
 
      render() {
-        // if (typeof (this.state.posts) !== "undefined" && this.state.posts !== null) { 
-
-        //console.log(typeof(this.state.posts));
-        //     console.log(this.state.posts[0]);
-
-        //     if (typeof (this.state.posts[0]) !== "undefined" && this.state.posts[0] !== null) {
-        //         console.log(Object.keys(this.state.posts[0]));
-        //         console.log(this.state.posts[0].userAuth);
-        //     }
-        // }
-
         const posts = this.state.posts.map(post => (
             <Post id={post.id}
                 text={post.text}
@@ -34,6 +24,8 @@
                 userAuth={post.userAuth}
                 authorName={post.authorName}
                 authorAvatarPath={post.authorAvatarPath}
+                isOwner={post.isOwner}
+                removeHandler={this.removeHandler}
                 key={post.id}
             >
             </Post>
@@ -45,7 +37,12 @@
                    </ul>
                </div>;
 
-    }
+     }
+
+     removeHandler(postId) {
+         this.setState({ posts: this.state.posts.filter(el => el.id !== postId) });
+
+     }
 
     componentWillMount() {
         this.getItems();
