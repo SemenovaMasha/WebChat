@@ -62,7 +62,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-6">
-                        <div class="list-group">
+                        <div class="list-group card scrollbar-light-blue">
                             <div class="list-group-item list-group-item-info">Members</div>
                             <a v-for="member in members" v-on:click="changeState(member)" href="#" class="list-group-item list-group-item-action">
                                 {{ member }}
@@ -70,7 +70,7 @@
                         </div>
                     </div>
                     <div class="col-sm-6">
-                        <div class="list-group">
+                        <div class="list-group card scrollbar-light-blue">
                             <div class="list-group-item list-group-item-info">Non-members</div>
                             <a v-for="nonmember in others" v-on:click="changeState(nonmember)" href="#" class="list-group-item list-group-item-action">
                                 {{ nonmember }}
